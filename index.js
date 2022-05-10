@@ -139,12 +139,20 @@ app.get('/api/users/:_id/logs', (req,res)=>{
 
     if(!user) res.json({'error': "this userId doesn't exists."})
     else{
-      console.log('found')
       //find user Exercises
       Exercise.find({ownerId: req.params._id, date: {"$gte": from, "$lt": to}}, (err, log)=>{
         if(err) console.log(err)
-        console.log(log)
-        res.send('k')
+        if(log){
+          let newLog = []
+
+          //doing this to avoid working with dumb dates converting and fomratting and all of this JAZZ
+          log.forEach((value, index, arr) =>{
+            newLog.push({description: log[index].description, duration: log[index].duration, date: new Date(log[index].date).toDateString()})
+          })
+
+          res.json({_id: user._id, username:user.username, count: newLog.length, log:newLog})
+        }
+        
       }).limit(limit)
     }
   })
