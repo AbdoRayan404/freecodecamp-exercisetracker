@@ -12,7 +12,8 @@
 		"cors": "^2.8.5",
 		"dotenv": "^8.2.0",
 		"express": "^4.16.4",
-		"mongoose": "^6.3.3"
+		"mongoose": "^6.3.3",
+		"uuid": "^8.3.2"
 	},
 	"repository": {
 		"url": "https://github.com/freeCodeCamp/boilerplate-project-exercisetracker"
