@@ -133,6 +133,11 @@ app.get('/api/users/:_id/logs', (req,res)=>{
     to = new Date('2999-1-1').toDateString()
   }
 
+  if(typeof limit !== 'number'){
+    res.json({'error':'you can only limit with string'})
+    return
+  }
+
   //if user exists
   User.findOne({_id: req.params._id}, (err, user)=>{
     if(err) console.log(err)
