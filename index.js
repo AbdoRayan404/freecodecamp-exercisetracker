@@ -24,6 +24,8 @@ app.get('/', (req, res) => {
 //    API routes    //
 //////////////////////
 
+//Usage: POST '/api/users' with Form data (username:XXX)
+//Returns: {username:XXX, _id:UUID}
 app.post('/api/users', (req, res)=>{
   
   //check if username is provided
@@ -49,6 +51,16 @@ app.post('/api/users', (req, res)=>{
   })
 })
 
+//Usage: GET '/api/users'
+//Returns: Array of Users [{_id:'21312-21312-123',username:'terry-404'}]
+app.get('/api/users', (req, res)=>{
+  User.find({}, (err, data) =>{
+    if(err) console.log(err);
+    if(data){
+      res.json(data)
+    }
+  })
+})
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
