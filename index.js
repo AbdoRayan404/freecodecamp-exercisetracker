@@ -62,6 +62,47 @@ app.get('/api/users', (req, res)=>{
   })
 })
 
+//Usage: POST '/api/users/:_id/exercises' with 
+//Form{
+//  _id: string (required)
+//  description: string (required)
+//  duration: int (required)
+//  date: Date (optional)  
+//}
+//Returns:
+app.post('/api/users/:_id/exercises', (req, res)=>{
+  //check if userId exists
+  User.findOne({_id:req.params._id}, (err, data) =>{
+    if(err) console.log(err);
+    //user not found || found
+    if(!data){res.json({'error':"this userId doesn't exists."})}
+    else{
+      //check if there's date supplied
+      if(!req.body.date){
+        req.body.date = new Date().toDateString()
+      }else{
+        req.body.date = new Date(req.body.date).toDateString()
+      }
+
+      //ceating new exercise document
+      const newExercise = new Exercise({
+        ownerId: req.params._id,
+        description: req.body.description || 'default description', //in case of not entering a description
+        duration: req.body.duration || 1, //in case of not entering a duration
+        date: req.body.date
+      })
+
+      //saving the exercise document
+      newExercise.save((err, saved)=>{
+        if(err) console.log(err);
+        if(saved){
+          res.json({_id:data._id, username:data.username, date:new Date(saved.date).toDateString(), duration:saved.duration, description:saved.description})
+        }
+      })
+    }
+  })
+
+})
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
