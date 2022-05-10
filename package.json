@@ -12,6 +12,7 @@
 		"cors": "^2.8.5",
 		"dotenv": "^8.2.0",
 		"express": "^4.16.4",
+		"moment-timezone": "^0.5.34",
 		"mongoose": "^6.3.3",
 		"uuid": "^8.3.2"
 	},
