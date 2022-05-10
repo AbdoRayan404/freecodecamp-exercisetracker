@@ -104,6 +104,54 @@ app.post('/api/users/:_id/exercises', (req, res)=>{
 
 })
 
+//Usage: GET '/api/users/:_id/logs' Optional query params:
+//from= Date yyyy-mm-dd
+//to= Date yyyy-mm-dd
+//limit= int
+//Returns: Object wtih array:
+//{_id:string, username:string, count:int,
+//log:[{
+//  description:string,
+//  duration: int,
+//  date: Date.toDateString()
+//}]}
+app.get('/api/users/:_id/logs', (req,res)=>{
+  let from = req.query.from;
+  let to = req.query.to;
+  let limit = req.query.limit
+  
+  //if from exists then change it's format
+  if(from){
+    from = new Date(from).toDateString()
+  }else{
+    from = new Date('1999-1-1').toDateString()
+  }
+
+  if(to){
+    to = new Date(to).toDateString()
+  }else{
+    to = new Date('2999-1-1').toDateString()
+  }
+
+  //if user exists
+  User.findOne({_id: req.params._id}, (err, user)=>{
+    if(err) console.log(err)
+
+    if(!user) res.json({'error': "this userId doesn't exists."})
+    else{
+      console.log('found')
+      //find user Exercises
+      Exercise.find({ownerId: req.params._id, date: {"$gte": from, "$lt": to}}, (err, log)=>{
+        if(err) console.log(err)
+        console.log(log)
+        res.send('k')
+      }).limit(limit)
+    }
+  })
+
+})
+
+
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
 })
