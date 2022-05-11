@@ -77,24 +77,21 @@ app.post('/api/users/:_id/exercises', (req, res)=>{
     //user not found || found
     if(!data){res.json({'error':"this userId doesn't exists."})}
     else{
-      //check if there's date supplied
-      if(!req.body.date){
-        req.body.date = new Date().toDateString()
-      }else{
-        req.body.date = new Date(req.body.date).toDateString()
-      }
 
       //ceating new exercise document
       const newExercise = new Exercise({
         ownerId: req.params._id,
         description: req.body.description || 'default description', //in case of not entering a description
         duration: req.body.duration || 1, //in case of not entering a duration
-        date: req.body.date
+        date: new Date(req.body.date)
       })
 
       //saving the exercise document
       newExercise.save((err, saved)=>{
-        if(err) console.log(err);
+        if(err) {
+          console.log(err)
+          res.json({'error':'there was an error saving the exercise'})
+        }
         if(saved){
           res.json({_id:data._id, username:data.username, date:new Date(saved.date).toDateString(), duration:saved.duration, description:saved.description})
         }
