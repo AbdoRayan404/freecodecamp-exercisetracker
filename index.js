@@ -78,12 +78,17 @@ app.post('/api/users/:_id/exercises', (req, res)=>{
     if(!data){res.json({'error':"this userId doesn't exists."})}
     else{
 
+      let date = new Date()
+      if(req.body.date){
+        date = new Date(req.body.date)
+      }
+
       //ceating new exercise document
       const newExercise = new Exercise({
         ownerId: req.params._id,
         description: req.body.description || 'default description', //in case of not entering a description
         duration: req.body.duration || 1, //in case of not entering a duration
-        date: new Date(req.body.date)
+        date: date
       })
 
       //saving the exercise document
@@ -116,42 +121,38 @@ app.get('/api/users/:_id/logs', (req,res)=>{
   let from = req.query.from;
   let to = req.query.to;
   let limit = req.query.limit
+
+  let id = req.params._id
   
   //if from exists then change it's format
   if(from){
-    from = new Date(from).toDateString()
-  }else{
-    from = new Date('1999-1-1').toDateString()
+    from = new Date(from)
   }
 
   if(to){
-    to = new Date(to).toDateString()
-  }else{
-    to = new Date('2999-1-1').toDateString()
+    to = new Date(to)
   }
 
 
   //if user exists
-  User.findOne({_id: req.params._id}, (err, user)=>{
+  User.findOne({_id: id}, (err, user)=>{
     if(err) console.log(err)
 
     if(!user) res.json({'error': "this userId doesn't exists."})
     else{
       //find user Exercises
-      Exercise.find({ownerId: req.params._id, date: {"$gte": from, "$lt": to}}, (err, log)=>{
+      Exercise.find({ownerId: id, date: {"$gte": from || new Date('1450-1-1'), "$lt": to || new Date('2300-1-1')}}, (err, log)=>{
         if(err) console.log(err)
         if(log){
-          let newLog = []
-
-          //doing this to avoid working with dumb dates converting and fomratting and all of this JAZZ
-          log.forEach((value, index, arr) =>{
-            newLog.push({description: log[index].description, duration: log[index].duration, date: new Date(log[index].date).toDateString()})
-          })
-
-          res.json({_id: user._id, username:user.username, count: newLog.length, log:newLog})
+          let formatedLog = log.map((v)=>({
+            description: v.description,
+            duration: v.duration,
+            date: v.date.toDateString()
+          }))
+          res.json({_id: user._id, username:user.username, count: log.length, log:formatedLog})
         }
         
-      }).limit(limit)
+      }).limit(limit || 100)
     }
   })
 
