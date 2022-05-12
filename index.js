@@ -4,7 +4,7 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
 
 const app = express()
-const {create_new_user, create_new_exercise, get_users, get_log} = require('./models/DataController')
+const {create_new_user, create_new_exercise, get_users, get_log} = require('./models/ModelController')
 
 require('dotenv').config()
 app.use(cors())
